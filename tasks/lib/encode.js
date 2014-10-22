@@ -184,15 +184,19 @@ exports.init = function(grunt) {
 
       // External URL?
     } else if(rExternal.test(img)) {
-      grunt.log.writeln("Encoding file: " + img);
-      fetch.image(img, function(err, src, cacheable) {
-        var encoded, type;
-        if (err == null) {
-          type = mime.lookup(img);
-          encoded = exports.getDataURI(type, src);
+        if (opts.disableRemoteImage) {
+          complete(null, img, false);
+        } else {
+          grunt.log.writeln("Encoding file: " + img);
+          fetch.image(img, function(err, src, cacheable) {
+            var encoded, type;
+            if (err == null) {
+              type = mime.lookup(img);
+              encoded = exports.getDataURI(type, src);
+            }
+            complete(err, encoded, cacheable);
+          } );
         }
-        complete(err, encoded, cacheable);
-      } );
 
       // Local file?
     } else {
